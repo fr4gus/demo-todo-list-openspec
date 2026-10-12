@@ -113,10 +113,12 @@ gitGraph
     commit id: "apply: add user auth"
     branch openspec-apply-add-todo-items
     commit id: "apply: add todo items"
+    branch openspec-apply-add-todo-ui
+    commit id: "apply: add todo ui"
 ```
 
 ```
-main -> openspec-init -> openspec-explore-propose -> openspec-apply-platform-scaffold -> openspec-apply-add-user-auth -> openspec-apply-add-todo-items
+main -> openspec-init -> openspec-explore-propose -> openspec-apply-platform-scaffold -> openspec-apply-add-user-auth -> openspec-apply-add-todo-items -> openspec-apply-add-todo-ui
 ```
 
 ## Layout
