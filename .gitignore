@@ -1,0 +1,17 @@
+# Build outputs
+backend/target/
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+*.log
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store

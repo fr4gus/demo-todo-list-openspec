@@ -1,0 +1,11 @@
+# Loaded automatically by `docker compose up`: bind-mounts source for fast feedback with the `dev` targets.
+# Ignored in CI image builds, which use `docker build` directly.
+services:
+  backend:
+    volumes:
+      - ./backend/src:/app/src
+  frontend:
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/index.html:/app/index.html
