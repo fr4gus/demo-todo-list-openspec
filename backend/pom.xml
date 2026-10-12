@@ -21,6 +21,8 @@
     <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
     <jacoco.version>0.8.13</jacoco.version>
     <jacoco.line.coverage>0.80</jacoco.line.coverage>
+    <!-- 1.21.4+ speaks the Docker API version required by Docker Engine 29 -->
+    <testcontainers.version>1.21.4</testcontainers.version>
   </properties>
 
   <dependencies>

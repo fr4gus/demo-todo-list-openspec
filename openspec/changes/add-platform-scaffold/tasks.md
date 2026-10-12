@@ -9,11 +9,11 @@
 
 - [x] 2.1 Generate the Maven project (Spring Boot 3.x, Java 21) with web, validation, security, data-jpa, data-redis, mail, actuator-free health controller, Flyway, PostgreSQL driver, logstash-logback-encoder, jjwt, test deps; verify `mvn -q verify` runs on an empty test suite
 - [x] 2.2 Add layered package structure and the `/api/v1/health` controller; verify with a MockMvc test that `GET /api/v1/health` returns 200
-- [ ] 2.3 Add the base audited entity, an initial Flyway baseline migration and JPA auditing; verify a Testcontainers repository test shows `created_at` is stable and `updated_at` advances on update
+- [x] 2.3 Add the base audited entity, an initial Flyway baseline migration and JPA auditing; verify a Testcontainers repository test shows `created_at` is stable and `updated_at` advances on update
 - [x] 2.4 Add `@RestControllerAdvice` problem-details handling with `code` extension, plus 401/403 handlers in the security config; verify MockMvc tests for 400 validation, 404, 500 (no stack trace) and 401/403 bodies
 - [x] 2.5 Add JSON logging with correlation-id filter; verify a test captures log output as valid JSON with the correlation id and that an `Authorization` header value never appears
 - [x] 2.6 Add the CORS configuration from `FRONTEND_ORIGIN`; verify MockMvc tests for the allowed origin and for a rejected foreign origin
-- [ ] 2.7 Add the Redis cache manager configuration (TTL, JSON serializer); verify an integration test using a Redis Testcontainer stores and evicts a sample cache entry
+- [x] 2.7 Add the Redis cache manager configuration (TTL, JSON serializer); verify an integration test using a Redis Testcontainer stores and evicts a sample cache entry
 - [x] 2.8 Add startup validation for required properties such as `JWT_SECRET`; verify the context fails with a message naming the missing variable
 - [x] 2.9 Configure JaCoCo with the 80% line-coverage check; verify `mvn verify` fails when the threshold is raised above actual coverage
 
@@ -29,12 +29,13 @@
 
 ## 4. Containers and Compose
 
-- [ ] 4.1 Write the backend multi-stage Dockerfile (`dev`, `build`, `prod`; non-root, JRE-only prod); verify `docker build --target prod` succeeds and the container runs as a non-root user
-- [ ] 4.2 Write the frontend multi-stage Dockerfile (`dev` with Vite, `prod` served by nginx); verify both targets build
-- [ ] 4.3 Write `docker-compose.yml` with frontend, backend, postgres, redis, mailpit, healthchecks and `depends_on` health conditions; verify `docker compose config` is valid and `docker compose up --build` reaches a healthy `/api/v1/health`
-- [ ] 4.4 Write the execution guide in `README.md` (prerequisites, `.env` setup, up/down, running tests, ports); verify the documented commands work from a clean clone
+- [x] 4.1 Write the backend multi-stage Dockerfile (`dev`, `build`, `prod`; non-root, JRE-only prod); verify `docker build --target prod` succeeds and the container runs as a non-root user
+- [x] 4.2 Write the frontend multi-stage Dockerfile (`dev` with Vite, `prod` served by nginx); verify both targets build
+- [x] 4.3 Write `docker-compose.yml` with frontend, backend, postgres, redis, mailpit, healthchecks and `depends_on` health conditions; verify `docker compose config` is valid and `docker compose up --build` reaches a healthy `/api/v1/health`
+- [x] 4.4 Write the execution guide in `README.md` (prerequisites, `.env` setup, up/down, running tests, ports); verify the documented commands work from a clean clone
 
 ## 5. CI pipeline
 
 - [x] 5.1 Add `.github/workflows/ci.yml` with `backend`, `frontend` and `docker` jobs triggered on pull requests and pushes to main; verify with `actionlint` or a pushed branch that the workflow parses and runs
 - [ ] 5.2 Make the `docker` job depend on the test jobs; verify a deliberately failing test stops the image build
+  - Note: `needs: [backend, frontend]` is in place and `actionlint` passes. The failing-run check is deferred until CI first runs on GitHub (local-only demo for now; cloud target AWS/GCP undecided).

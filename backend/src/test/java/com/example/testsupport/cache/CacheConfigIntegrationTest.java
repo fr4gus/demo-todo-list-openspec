@@ -17,6 +17,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -45,12 +46,8 @@ class CacheConfigIntegrationTest {
 
     @Configuration
     @ImportAutoConfiguration({RedisAutoConfiguration.class, CacheAutoConfiguration.class})
+    @Import(CacheConfig.class)
     static class TestApp {
-        @Bean
-        CacheConfig cacheConfig() {
-            return new CacheConfig();
-        }
-
         @Bean
         SampleService sampleService() {
             return new SampleService();
@@ -58,7 +55,15 @@ class CacheConfigIntegrationTest {
     }
 
     static class SampleService {
-        final AtomicInteger loads = new AtomicInteger();
+        private final AtomicInteger loads = new AtomicInteger();
+
+        int loads() {
+            return loads.get();
+        }
+
+        void resetLoads() {
+            loads.set(0);
+        }
 
         @Cacheable(cacheNames = "sample", key = "#id")
         public Item load(String id) {
@@ -81,7 +86,7 @@ class CacheConfigIntegrationTest {
     @BeforeEach
     void flush() {
         redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
-        service.loads.set(0);
+        service.resetLoads();
     }
 
     @Test
@@ -90,7 +95,7 @@ class CacheConfigIntegrationTest {
 
         Item first = service.load("1");
         Item second = service.load("1");
-        assertThat(service.loads).hasValue(1);
+        assertThat(service.loads()).isEqualTo(1);
         assertThat(second).isEqualTo(first);
 
         String key = "sample::1";
@@ -101,6 +106,6 @@ class CacheConfigIntegrationTest {
         service.evict("1");
         assertThat(redisTemplate.hasKey(key)).isFalse();
         service.load("1");
-        assertThat(service.loads).hasValue(2);
+        assertThat(service.loads()).isEqualTo(2);
     }
 }

@@ -6,6 +6,8 @@ import com.example.todo.config.JpaConfig;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -28,6 +30,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 })
 class AuditedEntityTest {
 
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    static class TestApp {
+    }
+
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
@@ -37,7 +44,10 @@ class AuditedEntityTest {
 
     @Test
     void createdAtIsStableAndUpdatedAtAdvancesOnUpdate() throws Exception {
-        AuditedSample saved = em.persistAndFlush(new AuditedSample("first"));
+        Long id = em.persistAndFlush(new AuditedSample("first")).getId();
+        em.clear();
+        // Reload so the baseline has the database's (microsecond) precision.
+        AuditedSample saved = em.find(AuditedSample.class, id);
         Instant created = saved.getCreatedAt();
         Instant updated = saved.getUpdatedAt();
         assertThat(created).isNotNull();
