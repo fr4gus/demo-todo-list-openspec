@@ -93,7 +93,7 @@ gitGraph
 ```
 
 ```
-main -> openspec-init -> openspec-explore-propose -> openspec-apply-platform-scaffold -> openspec-apply-add-user-auth
+main -> openspec-init -> openspec-explore-propose -> openspec-apply-platform-scaffold
 ```
 
 ## Layout
