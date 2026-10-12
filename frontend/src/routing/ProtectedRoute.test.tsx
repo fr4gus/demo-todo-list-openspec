@@ -8,7 +8,7 @@ import { server } from '../test/server'
 import { AppRoutes } from './AppRoutes'
 
 beforeEach(() => {
-  server.use(http.get('*/api/v1/health', () => HttpResponse.json({ status: 'UP' })))
+  server.use(http.get('*/api/v1/todos', () => HttpResponse.json([])))
 })
 
 describe('ProtectedRoute', () => {
@@ -42,17 +42,16 @@ describe('ProtectedRoute', () => {
       preloadedState: signedInState('USER'),
     })
 
-    expect(screen.getByRole('heading', { name: 'TODO' })).toBeInTheDocument()
-    expect(await screen.findByText('Backend: UP')).toBeInTheDocument()
+    expect(await screen.findByText('No tasks to do this time!')).toBeInTheDocument()
   })
 
-  it('redirects a USER who opens an admin route to /', () => {
+  it('redirects a USER who opens an admin route to /', async () => {
     renderWithProviders(<AppRoutes />, {
       route: '/admin/users',
       preloadedState: signedInState('USER'),
     })
 
-    expect(screen.getByRole('heading', { name: 'TODO' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Create TODO' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Users' })).not.toBeInTheDocument()
   })
 
@@ -63,7 +62,7 @@ describe('ProtectedRoute', () => {
     })
 
     expect(screen.getByRole('heading', { name: 'Users' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: 'TODO' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Create TODO' })).not.toBeInTheDocument()
   })
 
   it('shows the admin screen to an ADMIN', () => {
@@ -89,11 +88,11 @@ describe('ProtectedRoute', () => {
     expect(await screen.findByRole('heading', { name: 'Users' })).toBeInTheDocument()
   })
 
-  it('keeps a signed-in user on the page after a reload (session restored from storage)', () => {
+  it('keeps a signed-in user on the page after a reload (session restored from storage)', async () => {
     storeSession(makeSession('USER'))
 
     renderWithProviders(<AppRoutes />, { route: '/' })
 
-    expect(screen.getByRole('heading', { name: 'TODO' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Create TODO' })).toBeInTheDocument()
   })
 })

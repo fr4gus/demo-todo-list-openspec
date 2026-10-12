@@ -60,13 +60,13 @@ describe('SignInPage', () => {
     const session = makeSession('USER')
     server.use(
       http.post(`${API}/auth/login`, () => HttpResponse.json(session)),
-      http.get(`${API}/health`, () => HttpResponse.json({ status: 'UP' })),
+      http.get(`${API}/todos`, () => HttpResponse.json([])),
     )
     const { store } = renderWithProviders(<AppRoutes />, { route: '/login' })
 
     await signIn('ana@example.com', 'secret123')
 
-    expect(await screen.findByRole('heading', { name: 'TODO' })).toBeInTheDocument()
+    expect(await screen.findByText('No tasks to do this time!')).toBeInTheDocument()
     expect(store.getState().auth.token).toBe(session.token)
   })
 
