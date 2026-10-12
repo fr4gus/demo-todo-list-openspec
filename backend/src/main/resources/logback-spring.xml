@@ -13,6 +13,11 @@
       </encoder>
     </appender>
   </springProfile>
+  <!-- These print entity state and SQL bind/result values (users.password_hash, reset token hashes) at TRACE. Never raise them. -->
+  <logger name="org.hibernate.internal.util.EntityPrinter" level="OFF"/>
+  <logger name="org.hibernate.orm.jdbc.bind" level="OFF"/>
+  <logger name="org.hibernate.orm.jdbc.extract" level="OFF"/>
+  <logger name="org.postgresql" level="INFO"/>
   <root level="INFO">
     <appender-ref ref="STDOUT"/>
   </root>

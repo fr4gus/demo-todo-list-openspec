@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
-import { clearToken, setToken } from '../features/auth/authSlice'
+import { loggedIn, loggedOut } from '../features/auth/authSlice'
+import { makeSession } from '../test/fixtures'
 import { healthApi } from '../features/health/healthApi'
 import { server } from '../test/server'
 import { setupStore } from './store'
@@ -20,18 +21,19 @@ describe('baseApi', () => {
   it('sends the Bearer token when one exists', async () => {
     const seen = captureAuthHeader()
     const store = setupStore()
-    store.dispatch(setToken('abc.def.ghi'))
+    const session = makeSession()
+    store.dispatch(loggedIn(session))
 
     await store.dispatch(healthApi.endpoints.getHealth.initiate())
 
-    expect(seen).toEqual(['Bearer abc.def.ghi'])
+    expect(seen).toEqual([`Bearer ${session.token}`])
   })
 
   it('omits the Authorization header when there is no token', async () => {
     const seen = captureAuthHeader()
     const store = setupStore()
-    store.dispatch(setToken('abc'))
-    store.dispatch(clearToken())
+    store.dispatch(loggedIn(makeSession()))
+    store.dispatch(loggedOut())
 
     await store.dispatch(healthApi.endpoints.getHealth.initiate())
 

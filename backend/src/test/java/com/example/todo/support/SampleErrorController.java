@@ -33,6 +33,11 @@ public class SampleErrorController {
         throw new ApiException(HttpStatus.CONFLICT, "SAMPLE_CONFLICT", "Sample conflict.");
     }
 
+    @GetMapping("/me")
+    public String me() {
+        return com.example.todo.security.CurrentUser.id().toString();
+    }
+
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public void admin() {

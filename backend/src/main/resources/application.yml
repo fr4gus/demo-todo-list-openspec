@@ -33,3 +33,8 @@ spring:
 app:
   jwt-secret: ${JWT_SECRET:}
   frontend-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+  mail-from: ${MAIL_FROM:no-reply@todo.local}
+  admin:
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
+    full-name: ${ADMIN_FULL_NAME:}

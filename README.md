@@ -53,9 +53,28 @@ Nothing product-facing exists yet (sign-in, TODO list and admin arrive in later 
 2. Open http://localhost:5173. You are redirected to `/login` and see a "Sign in" heading (the TODO page is behind login).
 3. `curl http://localhost:5173/api/v1/health` returns the same `UP`, proving the frontend proxy reaches the backend.
 4. `curl -i http://localhost:8080/api/v1/anything` returns `401` with an `application/problem+json` body.
-5. Open http://localhost:8025 to see Mailpit (empty until password recovery exists).
+5. Open http://localhost:8025 to see Mailpit, which catches every email the backend sends (password reset links).
 
 If `JWT_SECRET` is empty the backend refuses to start and logs that `JWT_SECRET` is required.
+
+## Accounts, administrator and password recovery
+
+- **Sign up** at http://localhost:5173/signup, then sign in at `/login`. Sign-up only ever creates regular users.
+- **First administrator:** set `ADMIN_EMAIL`, `ADMIN_PASSWORD` and `ADMIN_FULL_NAME` in `.env` (all three or none; a partial
+  set stops the backend, and so does an email that already belongs to a regular user). The account is created on startup
+  if no admin exists yet. Admins land on `/admin/users` after signing in; regular users land on `/`.
+- **Sessions** are a 24-hour JWT kept in the browser; signing out only discards it client-side, and a password reset does
+  not revoke tokens already issued.
+- **Password reset email** is sent from `MAIL_FROM` and links to `FRONTEND_ORIGIN/reset-password?token=...`. The link works
+  once and expires after 60 minutes; at most 5 requests per email per hour.
+
+### Check password recovery locally
+
+1. Create an account, then open http://localhost:5173/forgot-password and submit its email.
+2. Open http://localhost:8025 (Mailpit). A "Reset your password" email arrives within a couple of seconds.
+3. Click the link in the email. It opens `http://localhost:5173/reset-password?token=...` and shows the "Set a new password" form.
+4. Submit a password of 8+ characters. You land on the sign-in screen with a success message and can sign in with the new password.
+5. Open the same link again: the page says the link no longer works and offers to request a new one.
 
 ## Run tests
 

@@ -1,24 +1,20 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-
-// Placeholder: the auth change replaces this slice (and `selectToken`) with the real one.
-interface AuthState {
-  token: string | null
-}
-
-const initialState: AuthState = { token: null }
+import { signedOutState } from './authStorage'
+import type { AuthState, Session } from './authTypes'
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState,
+  initialState: signedOutState as AuthState,
   reducers: {
-    setToken(state, action: PayloadAction<string>) {
-      state.token = action.payload
+    loggedIn(_state, action: PayloadAction<Session>) {
+      const { token, expiresAt, user } = action.payload
+      return { token, expiresAt, user }
     },
-    clearToken(state) {
-      state.token = null
+    loggedOut() {
+      return signedOutState
     },
   },
 })
 
-export const { setToken, clearToken } = authSlice.actions
+export const { loggedIn, loggedOut } = authSlice.actions
 export default authSlice.reducer

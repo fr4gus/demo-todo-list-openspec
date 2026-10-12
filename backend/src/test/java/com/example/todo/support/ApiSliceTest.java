@@ -4,6 +4,7 @@ import com.example.todo.config.PropertiesConfig;
 import com.example.todo.controller.HealthController;
 import com.example.todo.logging.CorrelationIdFilter;
 import com.example.todo.security.ProblemDetailSecurityHandlers;
+import com.example.todo.security.JwtService;
 import com.example.todo.security.SecurityConfig;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,7 +18,7 @@ import org.springframework.test.context.TestPropertySource;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @WebMvcTest(controllers = {HealthController.class, SampleErrorController.class})
-@Import({SecurityConfig.class, ProblemDetailSecurityHandlers.class, PropertiesConfig.class, CorrelationIdFilter.class})
+@Import({SecurityConfig.class, JwtService.class, ApiSliceTestBeans.class, ProblemDetailSecurityHandlers.class, PropertiesConfig.class, CorrelationIdFilter.class})
 @TestPropertySource(properties = {
         "app.jwt-secret=test-secret-test-secret-test-secret-123456",
         "app.frontend-origin=http://frontend.test",

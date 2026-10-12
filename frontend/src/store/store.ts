@@ -1,5 +1,10 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import authReducer from '../features/auth/authSlice'
+import {
+  combineReducers,
+  configureStore,
+  createListenerMiddleware,
+} from '@reduxjs/toolkit'
+import authReducer, { loggedIn, loggedOut } from '../features/auth/authSlice'
+import { clearSession, loadSession, saveSession } from '../features/auth/authStorage'
 import { baseApi } from './baseApi'
 
 const rootReducer = combineReducers({
@@ -7,11 +12,30 @@ const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,
 })
 
+/** Keeps localStorage in step with the session and wipes cached API data on sign-out. */
+function createSessionListener() {
+  const listener = createListenerMiddleware()
+  listener.startListening({
+    actionCreator: loggedIn,
+    effect: (action) => saveSession(action.payload),
+  })
+  listener.startListening({
+    actionCreator: loggedOut,
+    effect: (_action, api) => {
+      clearSession()
+      api.dispatch(baseApi.util.resetApiState())
+    },
+  })
+  return listener.middleware
+}
+
 export function setupStore(preloadedState?: Partial<RootState>) {
   return configureStore({
     reducer: rootReducer,
-    preloadedState,
-    middleware: (getDefault) => getDefault().concat(baseApi.middleware),
+    // A stored session is restored on load unless the caller supplies its own state.
+    preloadedState: { auth: loadSession(), ...preloadedState },
+    middleware: (getDefault) =>
+      getDefault().prepend(createSessionListener()).concat(baseApi.middleware),
   })
 }
 

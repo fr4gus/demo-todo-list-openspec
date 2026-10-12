@@ -8,5 +8,6 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app")
 public record AppProperties(
         @NotBlank(message = "JWT_SECRET environment variable is required") String jwtSecret,
-        @NotBlank(message = "FRONTEND_ORIGIN environment variable is required") String frontendOrigin) {
+        @NotBlank(message = "FRONTEND_ORIGIN environment variable is required") String frontendOrigin,
+        String mailFrom) {
 }
