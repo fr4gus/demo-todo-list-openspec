@@ -1,7 +1,11 @@
 package com.example.todo.exception;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -47,6 +52,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(e -> Map.of("field", e.getField(), "message", String.valueOf(e.getDefaultMessage())))
                 .toList();
         problem.setProperty("errors", errors);
+        return ResponseEntity.badRequest().headers(headers).body(problem);
+    }
+
+    /** A value that cannot be parsed (such as an unknown enum constant) is reported like any other invalid field. */
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        if (!(ex.getCause() instanceof InvalidFormatException invalid) || invalid.getPath().isEmpty()) {
+            return super.handleHttpMessageNotReadable(ex, headers, status, request);
+        }
+        String field = invalid.getPath().stream()
+                .map(JsonMappingException.Reference::getFieldName)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining("."));
+        ProblemDetail problem = ProblemDetails.of(HttpStatus.BAD_REQUEST, "VALIDATION_FAILED", "Request validation failed.");
+        problem.setProperty("errors", List.of(Map.of("field", field, "message", "has an invalid value")));
         return ResponseEntity.badRequest().headers(headers).body(problem);
     }
 
