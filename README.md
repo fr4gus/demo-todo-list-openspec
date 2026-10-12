@@ -96,6 +96,27 @@ npm run build
 `.github/workflows/ci.yml` runs on pull requests and pushes to `main`: `backend` and `frontend` jobs (lint, tests, coverage),
 then a `docker` job that builds the `prod` images (only if both pass; nothing is pushed).
 
+## Branch history
+
+This is a demo project built step by step with OpenSpec. Each branch starts from the previous one:
+
+```mermaid
+gitGraph
+    commit id: "main"
+    branch openspec-init
+    commit id: "init OpenSpec"
+    branch openspec-explore-propose
+    commit id: "explore + propose changes"
+    branch openspec-apply-platform-scaffold
+    commit id: "apply: platform scaffold"
+    branch openspec-apply-add-user-auth
+    commit id: "apply: add user auth"
+```
+
+```
+main -> openspec-init -> openspec-explore-propose -> openspec-apply-platform-scaffold -> openspec-apply-add-user-auth
+```
+
 ## Layout
 
 ```
